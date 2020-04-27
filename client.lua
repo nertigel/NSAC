@@ -7,34 +7,41 @@ print = function(trash)
 	oldPrint('[NSAC] '..trash)
 end
 
---[[Anti Modifiers]]
+--[[
+	NSAC Main
+]]
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(5000)
-		if NetworkIsInSpectatorMode() then
-			print('spectator mode manipulation')
+		if Config.disallowSpectating and NetworkIsInSpectatorMode() then
+			TriggerServerEvent('nsac:trigger', 'nsac_1 - spectate')
 		end
 
-		if GetEntityHealth(GetPlayerPed(-1)) > 200 then
-			print('health is above maximum')
+		if GetEntityHealth(GetPlayerPed(-1)) > Config.maxHealth then
+			TriggerServerEvent('nsac:trigger', 'nsac_2 - health')
 		end
 
 		local weaponDamageModifier = GetPlayerWeaponDamageModifier(PlayerId())
-		
 		if weaponDamageModifier > 1.0 then
-			print('PlayerWeaponDamageModifier == '..weaponDamageModifier)
+			TriggerServerEvent('nsac:trigger', 'nsac_3 - damage multiplier ('..weaponDamageModifier..')')
 		end
+	end
+end)
+Citizen.CreateThread(function()
+	while true do
+		Citizen.Wait(0)
+		SetPedInfiniteAmmoClip(PlayerPedId(), false)
 	end
 end)
 
 --[[
-	Detection against BasedFX and against executors that create resources
+	Detection against executors that create resources with a name that contains 16 or more
 	Credits: https://github.com/Mememan55
 ]]
 AddEventHandler('onClientResourceStart', function(resourceName)
     local length = string.len(resourceName)
     local firstLetter = string.sub(resourceName, 1,1)
-    if length >= 15 then
-		print('onClientResourceStart triggered | Resource:'..resourceName)
+    if length >= 16 then
+		TriggerServerEvent('nsac:trigger', 'nsac_42 - new resource')
     end
 end)
