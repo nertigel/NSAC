@@ -46,14 +46,6 @@ Citizen.CreateThread(function()
 	end
 end)
 
-if Config.currentFramework == 'NONE' then
-	
-elseif Config.currentFramework == 'ESX' then
-	
-elseif Config.currentFramework == 'VRP' then
-
-end
-
 --[[
 	Detection against executors that create resources with a name that contains 16 or more
 	Credits: https://github.com/Mememan55
@@ -62,6 +54,21 @@ AddEventHandler('onClientResourceStart', function(resourceName)
     local length = string.len(resourceName)
     local firstLetter = string.sub(resourceName, 1,1)
     if length >= 16 then
-		TriggerServerEvent('nsac:trigger', 'nsac_42 - new resource')
+		TriggerServerEvent('nsac:trigger', 'nsac_90 - new resource')
     end
 end)
+
+if Config.currentFramework ~= 'ESX' then
+	RegisterNetEvent('esx:getSharedObject')
+	AddEventHandler('esx:getSharedObject', function(cb)
+		TriggerServerEvent('nsac:trigger', 'nsac_99 - esx grab')
+	end)
+end
+
+if Config.currentFramework == 'NONE' then
+	
+elseif Config.currentFramework == 'ESX' then
+	
+elseif Config.currentFramework == 'VRP' then
+	
+end
