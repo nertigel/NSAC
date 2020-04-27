@@ -22,7 +22,7 @@ Citizen.CreateThread(function()
 		end
 
 		local weaponDamageModifier = GetPlayerWeaponDamageModifier(PlayerId())
-		if weaponDamageModifier > 1.0 then
+		if Config.damageMultiplierCheck and weaponDamageModifier > 1.0 then
 			TriggerServerEvent('nsac:trigger', 'nsac_3 - damage multiplier ('..weaponDamageModifier..')')
 		end
 
@@ -47,15 +47,34 @@ Citizen.CreateThread(function()
 end)
 
 --[[
-	Detection against executors that create resources with a name that contains 16 or more
+	Detection against executors that create resources with a name that contains Config.onResourceStartLength's amount or more
 	Credits: https://github.com/Mememan55
 ]]
-AddEventHandler('onClientResourceStart', function(resourceName)
-    local length = string.len(resourceName)
-    local firstLetter = string.sub(resourceName, 1,1)
-    if length >= 16 then
-		TriggerServerEvent('nsac:trigger', 'nsac_90 - new resource')
-    end
+if Config.onResourceStartCheck then
+	AddEventHandler('onClientResourceStart', function(resourceName)
+		local allowedResources = {
+			'fivem-map-hipster',
+			'fivem-map-skater',
+			'essentialmode'
+		}
+		for i=1, #allowedResources do
+			if resourceName == allowedResources[i] then
+				print('onClientResourceStart: '..allowedResources[i]..' has been skipped')
+				return
+			end
+		end
+		local length = string.len(resourceName)
+		local firstLetter = string.sub(resourceName, 1,1)
+		if length >= Config.onResourceStartLength then
+			TriggerServerEvent('nsac:trigger', 'nsac_90 - new resource ('..resourceName..')')
+		end
+	end)
+end
+
+AddEventHandler('onClientResourceStop', function(resourceName)
+	if resourceName == GetCurrentResourceName() then
+		TriggerServerEvent('nsac:trigger', 'nsac_98 - stopping me >:(')
+	end
 end)
 
 if Config.currentFramework ~= 'ESX' then
@@ -63,12 +82,4 @@ if Config.currentFramework ~= 'ESX' then
 	AddEventHandler('esx:getSharedObject', function(cb)
 		TriggerServerEvent('nsac:trigger', 'nsac_99 - esx grab')
 	end)
-end
-
-if Config.currentFramework == 'NONE' then
-	
-elseif Config.currentFramework == 'ESX' then
-	
-elseif Config.currentFramework == 'VRP' then
-	
 end
