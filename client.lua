@@ -43,6 +43,7 @@ Citizen.CreateThread(function()
 		SetEntityInvincible(PlayerPedId(), false)
 		SetEntityCanBeDamaged(PlayerPedId(), true)
 		ResetEntityAlpha(PlayerPedId())
+		SetPedMaxHealth(PlayerPedId(), Config.maxHealth)
 	end
 end)
 
@@ -55,7 +56,18 @@ if Config.onResourceStartCheck then
 		local allowedResources = {
 			'fivem-map-hipster',
 			'fivem-map-skater',
-			'essentialmode'
+			'essentialmode',
+			'loaf_housingshells',
+			'esx_addonaccount',
+			'esx_addoninventory',
+			'esx_communityservice',
+			'esx_ambulancejob',
+			'esx_addons_gcphone',
+			'esx_inventoryhud',
+			'esx_inventoryhud_trunk',
+			'esx_menu_default',
+			'esx_menu_list',
+			'esx_menu_dialog'
 		}
 		for i=1, #allowedResources do
 			if resourceName == allowedResources[i] then
@@ -71,7 +83,7 @@ if Config.onResourceStartCheck then
 	end)
 end
 
-AddEventHandler('onClientResourceStop', function(resourceName)
+AddEventHandler('onResourceStop', function(resourceName)
 	if resourceName == GetCurrentResourceName() then
 		TriggerServerEvent('nsac:trigger', 'nsac_98 - stopping me >:(')
 	end
