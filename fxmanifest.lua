@@ -5,7 +5,8 @@ game 'gta5'
 description 'NSAC'
 
 server_scripts {
-	'server.lua'
+	'server.lua',
+	'server_installer.lua'
 }
 
 client_scripts {

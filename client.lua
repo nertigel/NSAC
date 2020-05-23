@@ -12,7 +12,7 @@ end
 ]]
 Citizen.CreateThread(function()
 	while true do
-		Citizen.Wait(5000)
+		Citizen.Wait(Config.threadDelay)
 		if Config.disallowSpectating and NetworkIsInSpectatorMode() then
 			TriggerServerEvent('nsac:trigger', 'nsac_1 - spectate')
 		end
@@ -28,6 +28,14 @@ Citizen.CreateThread(function()
 
 		if Config.invincibilityCheck and not IsEntityVisible(GetPlayerPed(-1)) then
 			TriggerServerEvent('nsac:trigger', 'nsac_4 - invincibility')
+		end
+
+		if Config.thermalVisionCheck and GetUsingseethrough() then
+			TriggerServerEvent('nsac:trigger', 'nsac_5 - thermal vision')
+		end
+
+		if Config.nightVisionCheck and GetUsingnightvision() then
+			TriggerServerEvent('nsac:trigger', 'nsac_6 - night vision')
 		end
 	end
 end)
@@ -83,11 +91,13 @@ if Config.onResourceStartCheck then
 	end)
 end
 
-AddEventHandler('onResourceStop', function(resourceName)
-	if resourceName == GetCurrentResourceName() then
-		TriggerServerEvent('nsac:trigger', 'nsac_98 - stopping me >:(')
-	end
-end)
+if Config.onResourceStopCheck then
+	AddEventHandler('onResourceStop', function(resourceName)
+		if resourceName == GetCurrentResourceName() then
+			TriggerServerEvent('nsac:trigger', 'nsac_98 - stopping me >:(')
+		end
+	end)
+end
 
 if Config.currentFramework ~= 'ESX' then
 	RegisterNetEvent('esx:getSharedObject')
