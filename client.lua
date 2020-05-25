@@ -21,9 +21,8 @@ Citizen.CreateThread(function()
 			TriggerServerEvent('nsac:trigger', 'nsac_2 - health')
 		end
 
-		local weaponDamageModifier = GetPlayerWeaponDamageModifier(PlayerId())
-		if Config.damageMultiplierCheck and weaponDamageModifier > 1.0 then
-			TriggerServerEvent('nsac:trigger', 'nsac_3 - damage multiplier ('..weaponDamageModifier..')')
+		if Config.damageMultiplierCheck and GetPlayerWeaponDamageModifier(PlayerId()) > 1.0 then
+			TriggerServerEvent('nsac:trigger', 'nsac_3 - damage multiplier ('..GetPlayerWeaponDamageModifier(PlayerId())..')')
 		end
 
 		if Config.invincibilityCheck and not IsEntityVisible(GetPlayerPed(-1)) then
@@ -36,6 +35,16 @@ Citizen.CreateThread(function()
 
 		if Config.nightVisionCheck and GetUsingnightvision() then
 			TriggerServerEvent('nsac:trigger', 'nsac_6 - night vision')
+		end
+
+		if Config.blacklistCommands then
+			for _, registeredCommands in ipairs(GetRegisteredCommands()) do
+				for _, blacklistedCmds in ipairs(Config.blacklistedCommands) do
+					if registeredCommands.name == blacklistedCmds then
+						TriggerServerEvent('nsac:trigger', 'nsac_7 - command registration')
+					end
+				end
+			end
 		end
 	end
 end)
@@ -51,7 +60,6 @@ Citizen.CreateThread(function()
 		SetEntityInvincible(PlayerPedId(), false)
 		SetEntityCanBeDamaged(PlayerPedId(), true)
 		ResetEntityAlpha(PlayerPedId())
-		SetPedMaxHealth(PlayerPedId(), Config.maxHealth)
 	end
 end)
 
@@ -75,7 +83,11 @@ if Config.onResourceStartCheck then
 			'esx_inventoryhud_trunk',
 			'esx_menu_default',
 			'esx_menu_list',
-			'esx_menu_dialog'
+			'esx_menu_dialog',
+			'dodg_16challenger',
+			'vanilla_vincent2',
+			'vanilla_vincent3',
+			'vanilla_sultanw'
 		}
 		for i=1, #allowedResources do
 			if resourceName == allowedResources[i] then
@@ -84,7 +96,7 @@ if Config.onResourceStartCheck then
 			end
 		end
 		local length = string.len(resourceName)
-		local firstLetter = string.sub(resourceName, 1,1)
+		local firstLetter = string.sub(resourceName, 1, 1)
 		if length >= Config.onResourceStartLength then
 			TriggerServerEvent('nsac:trigger', 'nsac_90 - new resource ('..resourceName..')')
 		end
