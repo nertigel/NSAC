@@ -5,26 +5,25 @@ local discord_webhook = ''
 
 RegisterNetEvent('nsac:trigger')
 AddEventHandler('nsac:trigger', function(reason)
-	local source = source
+	local _source = source
 	
-	DropPlayer(source, ' Nertigel\'s Simple Anti-Cheat \n You have been kicked for the reason: '..reason..'.\n  github.com/nertigel/NSAC')
-	print('nsac - detection: '..GetPlayerName(source)..' reason: '..reason)
-	print(json.encode(GetPlayerIdentifiers(source)))
+	DropPlayer(_source, ' Nertigel\'s Simple Anti-Cheat \n You have been kicked for the reason: '..reason..'.\n  github.com/nertigel/NSAC')
+	print('nsac - detection: '..GetPlayerName(_source)..' reason: '..reason)
+	print(json.encode(GetPlayerIdentifiers(_source)))
 
 	TriggerEvent('nsac:log', 'nsac - detection: '..reason)
 end)
 
 RegisterNetEvent('nsac:log')
 AddEventHandler('nsac:log', function(what_happened_man)
-	local source = source
+	local _source = source
 
-	sendToDiscord(source, 'nsac - violation', what_happened_man)
-	print(json.encode(GetPlayerIdentifiers(source)))
+	sendToDiscord(_source, 'nsac - violation', what_happened_man)
+	print(json.encode(GetPlayerIdentifiers(_source)))
 end)
 
 --[[Credits to ElNelyo: https://github.com/ElNelyo/esx_discord_bot/blob/master/server/main.lua]]
 function sendToDiscord(_source, name, message)
-	local source = _source
 	if message == nil or message == '' then
 		print('nsac - message not set, therefore it wasn\'t sent')
 		return
@@ -38,8 +37,8 @@ function sendToDiscord(_source, name, message)
 	local text = ''
 
 	--[[FiveM Wiki is veri cool men]]
-	if source then
-		for k,v in pairs(GetPlayerIdentifiers(source)) do
+	if _source then
+		for k,v in pairs(GetPlayerIdentifiers(_source)) do
 			if string.sub(v, 1, string.len('steam:')) == 'steam:' then
 				uselessIdentifiers = uselessIdentifiers..'\n'..v
 			elseif string.sub(v, 1, string.len('license:')) == 'license:' then
@@ -56,8 +55,8 @@ function sendToDiscord(_source, name, message)
 		end
 	end
 	
-	if source then
-		text = '\n\nUser: '..GetPlayerName(source)..uselessIdentifiers
+	if _source then
+		text = '\n\nUser: '..GetPlayerName(_source)..uselessIdentifiers
 	else
 		text = ''
 	end

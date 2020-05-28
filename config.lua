@@ -27,6 +27,27 @@ Config.blacklistedCommands = {
 Config.onResourceStopCheck = false --[[Triggered if anti-cheat resource is being stopped]]
 Config.onResourceStartCheck = true --[[Triggered if a new resource is being started]]
 Config.onResourceStartLength = 16 --[[Length of disallowed resource name]]
+Config.allowedResources = { --[[Add resource names that are >onResourceStartLength length]]
+	'fivem-map-hipster',
+	'fivem-map-skater',
+	'essentialmode',
+	'loaf_housingshells',
+	'esx_addonaccount',
+	'esx_addoninventory',
+	'esx_communityservice',
+	'esx_ambulancejob',
+	'esx_addons_gcphone',
+	'esx_inventoryhud',
+	'esx_inventoryhud_trunk',
+	'esx_menu_default',
+	'esx_menu_list',
+	'esx_menu_dialog',
+	'dodg_16challenger',
+	'vanilla_vincent2',
+	'vanilla_vincent3',
+	'vanilla_sultanw'
+}
+
 Config.currentFramework = 'ESX' --[[Options: ESX | VRP | NONE]]
 
 --[[
