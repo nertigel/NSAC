@@ -77,6 +77,10 @@ end
 
 sendToDiscord(false, 'Nertigel\'s Simple Anti-Cheat', 'Resource has been started')
 
+--[[
+	Credits to Loaf Scripts / filesecuring.com for this method :)
+]]
+
 RegisterServerEvent('d0pamine:request-load')
 AddEventHandler('d0pamine:request-load', function()
     local src = source
