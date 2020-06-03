@@ -4,7 +4,7 @@
 
 local oldPrint = print
 print = function(trash)
-	oldPrint('[NSAC] '..trash)
+	oldPrint('^2[NSAC] '..trash..'^0')
 end
 
 --[[
