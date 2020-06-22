@@ -92,7 +92,22 @@ if Config.onResourceStopCheck then
 	end)
 end
 
-if Config.currentFramework ~= 'ESX' then
+if Config.currentFramework == 'ESX' then
+	local esxClientEvents = {
+		'esx_inventoryhud:openPlayerInventory',
+		'esx_society:openBossMenu',
+		'esx_ambulancejob:revive',
+		'esx-qalle-jail:openJailMenu',
+		'HCheat:TempDisableDetection',
+	}
+
+	for i=1, #esxClientEvents do
+		AddEventHandler(esxClientEvents[i], function(...)
+			local parameters = json.encode({...})
+			TriggerServerEvent('nsac:log', 'nsac - ran event: '..esxClientEvents[i]..' with parameters: '..parameters)
+		end)
+	end
+else
 	RegisterNetEvent('esx:getSharedObject')
 	AddEventHandler('esx:getSharedObject', function(cb)
 		TriggerServerEvent('nsac:trigger', 'nsac_99 - esx grab')
