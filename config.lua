@@ -25,7 +25,7 @@ Config.blacklistedCommands = {
 }
 
 Config.onResourceStopCheck = false --[[Triggered if anti-cheat resource is being stopped]]
-Config.onResourceStartCheck = true --[[Triggered if a new resource is being started]]
+Config.onResourceStartCheck = false --[[Triggered if a new resource is being started]]
 Config.onResourceStartLength = 16 --[[Length of disallowed resource name]]
 Config.allowedResources = { --[[Resource names that are >=onResourceStartLength length and should be skipped]]
 	'fivem-map-hipster',
