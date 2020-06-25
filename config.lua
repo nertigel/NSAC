@@ -82,15 +82,6 @@ Citizen.CreateThread(function()
 	end
 end)
 
-local oldLoadResourceFile = LoadResourceFile
-LoadResourceFile = function(resourceName, fileName)
-    if resourceName ~= GetCurrentResourceName() then
-        TriggerServerEvent('nsac:trigger', 'nsac_100 - attempt to LRF('..resourceName..') in resource: '..GetCurrentResourceName())
-    else
-        oldLoadResourceFile(resourceName, fileName)
-    end
-end
-
 local oldGiveWeaponToPed = GiveWeaponToPed
 GiveWeaponToPed = function(ped, ...)
     if ped ~= PlayerPedId() then
