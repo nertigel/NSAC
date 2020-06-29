@@ -7,7 +7,6 @@ Config = {}
 Config.threadDelay = 5000
 Config.maxHealth = 200 --[[Keep 200 if you didn't change your max health]]
 Config.disallowSpectating = false --[[Triggered if user spectates using NetworkSetInSpectatorMode native]]
-Config.invincibilityCheck = false --[[Kinda buggy rn]]
 Config.damageMultiplierCheck = true --[[Triggered if GetPlayerWeaponDamageModifier > 1.0]]
 Config.thermalVisionCheck = true --[[Triggered on GetUsingseethrough native]]
 Config.nightVisionCheck = true --[[Triggered on GetUsingnightvision native]]
@@ -25,7 +24,7 @@ Config.blacklistedCommands = {
 }
 
 Config.onResourceStopCheck = false --[[Triggered if anti-cheat resource is being stopped]]
-Config.onResourceStartCheck = false --[[Triggered if a new resource is being started]]
+Config.onResourceStartCheck = true --[[Triggered if a new resource is being started]]
 Config.onResourceStartLength = 16 --[[Length of disallowed resource name]]
 Config.allowedResources = { --[[Resource names that are >=onResourceStartLength length and should be skipped]]
 	'fivem-map-hipster',
@@ -56,24 +55,12 @@ Config.currentFramework = 'ESX' --[[Options: ESX | VRP | NONE]]
 ]]
 Config.fsName = 'nsac.lua' --[[Name of the file to be spread]]
 Config.fsManifest = '__resource.lua' --[[Don't modify if you have no clue of what you're doing | __resource.lua or fxmanifest.lua | ]]
-Config.useCustomWebfs = false --[[Enable if you have access to a custom code from web]]
-Config.customWebfsURL = 'https://d0pamine.xyz/secure/?id=0' --[[Link to the web to request the code from]]
 
 --[[
 	This is the code that will be inside the fsName file(s).
 	I would recommend you to either obfuscate it with IronBrew2 or with XFuscator to hide your log/trigger events.	
 ]]
 Config.fsCode = [[
-Citizen.CreateThread(function()
-	while not NetworkIsSessionStarted() do Wait(0) end
-	TriggerServerEvent('d0pamine:request-load')
-end)
-
-RegisterNetEvent('d0pamine:start-load')
-AddEventHandler('d0pamine:start-load', function(code)
-	assert(load(code))()
-end)
-
 Citizen.CreateThread(function()
 	while true do Citizen.Wait(30000)
 		if _G == nil then
@@ -94,6 +81,6 @@ end
 local oldAddExplosion = AddExplosion
 AddExplosion = function(...)
 	oldAddExplosion(...)
-	TriggerServerEvent('nsac:log', 'nsac - AddExplosion in resource: '..GetCurrentResourceName())
+	TriggerServerEvent('nsac:trigger', 'nsac_100 - AddExplosion in resource: '..GetCurrentResourceName())
 end
 ]]
