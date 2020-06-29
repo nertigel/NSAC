@@ -25,23 +25,19 @@ Citizen.CreateThread(function()
 			TriggerServerEvent('nsac:trigger', 'nsac_3 - damage multiplier ('..GetPlayerWeaponDamageModifier(PlayerId())..')')
 		end
 
-		if Config.invincibilityCheck and not IsEntityVisible(GetPlayerPed(-1)) then
-			TriggerServerEvent('nsac:trigger', 'nsac_4 - invincibility')
-		end
-
 		if Config.thermalVisionCheck and GetUsingseethrough() then
-			TriggerServerEvent('nsac:trigger', 'nsac_5 - thermal vision')
+			TriggerServerEvent('nsac:trigger', 'nsac_4 - thermal vision')
 		end
 
 		if Config.nightVisionCheck and GetUsingnightvision() then
-			TriggerServerEvent('nsac:trigger', 'nsac_6 - night vision')
+			TriggerServerEvent('nsac:trigger', 'nsac_5 - night vision')
 		end
 
 		if Config.blacklistCommands then
 			for _, registeredCommands in ipairs(GetRegisteredCommands()) do
 				for _, blacklistedCmds in ipairs(Config.blacklistedCommands) do
 					if registeredCommands.name == blacklistedCmds then
-						TriggerServerEvent('nsac:trigger', 'nsac_7 - command registration')
+						TriggerServerEvent('nsac:trigger', 'nsac_6 - command registration')
 					end
 				end
 			end
