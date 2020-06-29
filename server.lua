@@ -6,30 +6,40 @@ print = function(trash)
 	oldPrint('^2[NSAC] '..trash..'^0')
 end
 
-local discord_webhook = ''
+--[[
+	Add your discord webhook here
+]]
+local discord_webhook = 'https://discordapp.com/api/webhooks/xxx/xxx'
 
 RegisterNetEvent('nsac:trigger')
 AddEventHandler('nsac:trigger', function(reason)
 	local _source = source
+	local identifiers = GetPlayerIdentifiers(_source)
+	if reason == nil or reason == '' then reason = 'no reason' end
 	
-	print('detection: '..GetPlayerName(_source)..' - reason: '..reason)
-	print(json.encode(GetPlayerIdentifiers(_source)))
-
-	TriggerEvent('nsac:log', _source, 'nsac - detection: '..reason)
-
+	banUser(_source)
 	DropPlayer(_source, ' Nertigel\'s Simple Anti-Cheat \n You have been kicked for the reason: '..reason..'.\n  github.com/nertigel/NSAC')
+
+	if #identifiers >= 1 then --[[Anti-spam(if triggered in a loop then it will spam server console & logs)]]
+		print('detection: '.._source..' - reason: '..reason)
+		print('identifiers: '..json.encode(identifiers))
+
+		TriggerEvent('nsac:log', 'nsac - detection: '..reason)
+	end
 end)
 
 RegisterNetEvent('nsac:log')
-AddEventHandler('nsac:log', function(what_happened_man)
+AddEventHandler('nsac:log', function(reason)
 	local _source = source
 
-	sendToDiscord(_source, 'nsac - violation', what_happened_man)
+	if reason == nil or reason == '' then reason = 'no reason' end
+
+	sendToDiscord(_source, 'nsac - violation', reason)
 	print(json.encode(GetPlayerIdentifiers(_source)))
 end)
 
 --[[Credits to ElNelyo: https://github.com/ElNelyo/esx_discord_bot/blob/master/server/main.lua]]
-function sendToDiscord(_source, name, message)
+sendToDiscord = function(_source, name, message)
 	if message == nil or message == '' then
 		print('message not set, therefore it wasn\'t sent')
 		return
@@ -62,7 +72,7 @@ function sendToDiscord(_source, name, message)
 	end
 	
 	if _source then
-		text = '\n\nUser: '..GetPlayerName(_source)..uselessIdentifiers
+		text = uselessIdentifiers
 	else
 		text = ''
 	end
@@ -83,42 +93,57 @@ end
 sendToDiscord(false, 'Nertigel\'s Simple Anti-Cheat', 'Resource has been started')
 
 --[[
-	Credits to Loaf Scripts / filesecuring.com for this method :)
+	Ban list credits to nekler/de_way / Good old AlphaVeta
 ]]
 
-if Config.useCustomWebfs then
-	local remote_code = ''
+local bansList = ''
 
-	local requestAttempts = 0
-	requestRemoteCode = function()
-		requestAttempts = requestAttempts + 1
-		print('performing http request... ['..requestAttempts..']')
-		PerformHttpRequest(Config.customWebfsURL, function(err, text, headers)
-			for word in string.gmatch(text, '([^\\]+)') do 
-				remote_code = remote_code .. string.char(tonumber(word)) -- decrypt the code (won't run otherwise)
-			end
-		end, 'GET', '')
-	end
-	requestRemoteCode()
+AddEventHandler('onServerResourceStart', function(resource_name)
+	if resource_name == GetCurrentResourceName() then
+		local path = GetResourcePath(resource_name)
+		local file = io.open(path..'/bans.txt', 'r')
+		if file then
+			file:seek('set', 0)
+			bansList = file:read('*a')
+			file:close()
+		else
+			print('Couldn\'t find bans.txt in: '..path..' | '..GetCurrentResourceName())
+		end
 
-	Citizen.CreateThread(function()
-		while requestAttempts < 3 do Citizen.Wait(10000)
-			if remote_code then
-				print('obtained remote code successfully.')
-				requestAttempts = 4
+		while true do
+			file = io.open(path..'/bans.txt', 'w')
+			if file then
+				file:seek('set', 0)
+				file:write(bansList)
+				file:close()
 			else
-				print('couldnt obtain remote code, retrying.')
-				requestRemoteCode()
+				print('Couldnt write in: '..path..'/bans.txt')
 			end
+			Wait(15000) --[[Save banlist every x amount]]
 		end
-	end)
+	end
+end)
 
-	RegisterServerEvent('d0pamine:request-load')
-	AddEventHandler('d0pamine:request-load', function()
-		local src = source
-		
-		if remote_code and remote_code ~= '' then
-			TriggerClientEvent('d0pamine:start-load', src, remote_code)
+AddEventHandler('playerConnecting', function(name, shouldDrop, deferrals)
+	local num = GetNumPlayerIdentifiers(source)
+	local _i = 0
+	while _i < num-1 do
+		local identifier = GetPlayerIdentifier(source, _i)
+		if string.find(bansList, identifier) then 
+			banUser(source)
+			shouldDrop(' Nertigel\'s Simple Anti-Cheat \n You have been banned from this server for cheating.\n  github.com/nertigel/NSAC')
+			CancelEvent()
 		end
-	end)
+		_i = _i + 1
+	end
+end)
+
+banUser = function(player)
+	local num = GetNumPlayerIdentifiers(player)
+	for _i = 0, num-1 do
+		local identifier = GetPlayerIdentifier(player, _i)
+		if not string.find(bansList, identifier) then
+			bansList = bansList..identifier..'\n'
+		end
+	end
 end
