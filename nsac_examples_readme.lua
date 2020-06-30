@@ -52,7 +52,7 @@ end)
 
 checkGlobalVariable = function()
 	for _i in pairs(functionsToCheck) do
-		if (_G[functionsToCheck[_i]] ~= nil) then
+		if (_G[functionsToCheck[_i] ] ~= nil) then
 			return true
 		else
 			return false
